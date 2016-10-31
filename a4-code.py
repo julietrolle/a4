@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
+import xlrd
 
 matplotlib.style.use('ggplot')
 import pprint
