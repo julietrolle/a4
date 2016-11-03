@@ -35,11 +35,29 @@ for row in current.iterrows():
 
 #pprint.pprint(split_dict)
 
-def new_cols(spl_dict):
+def new_cols(spl_dict, dfr):     #to take the split data and put it into the current dataframe in new columns
     for idx, d in spl_dict.items():
-        current.ix[idx, 'PatientID'] = d['patientID']
-        current.ix[idx, 'Visit'] = d['visit']
-        current.ix[idx, 'Dilution'] = d['dilution']
+        dfr.ix[idx, 'PatientID'] = d['patientID']
+        dfr.ix[idx, 'Visit'] = d['visit']
+        dfr.ix[idx, 'Dilution'] = d['dilution']
+    return dfr
 
-new_cols(split_dict)
+new_cols(split_dict, current)
 print(current[['PatientID', 'Visit', 'Dilution']])
+
+def find_unique_patientID(dfr):
+    test = list(dfr['PatientID'].unique())
+    return test
+
+unique_patientID_list = find_unique_patientID(current)
+print(unique_patientID_list)
+
+# print(current.groupby('PatientID').groups)
+
+def groupby_fn(dfr, patient):
+    return dfr.ix[dfr['PatientID'] == patient, :]
+
+for patient in unique_patientID_list:
+    groupby_fn(current, patient) #print this to see what it does
+    #input plotting code
+
