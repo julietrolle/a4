@@ -20,7 +20,7 @@ current = df['Plate 1'] # allows us to figure stuff out for one plate before we 
 
     #after chatting with Mark:
 def splitSampleID(sampleID):
-    print(sampleID)
+    #print(sampleID)
     temp = sampleID.split()
     if len(temp) == 3:
         return {'patientID': temp[0], 'visit': temp[1], 'dilution': temp[2]}
@@ -30,7 +30,16 @@ def splitSampleID(sampleID):
 # {rowid: {'patientID': asd, 'visit':v1, 'dilution':1231}, }
 split_dict = {}
 for row in current.iterrows():
-    # print(list(row[1].iteritems()))
+    #print(list(row[1].iteritems()))
     split_dict[row[0]] = splitSampleID(row[1][0])
 
-pprint.pprint(split_dict)
+#pprint.pprint(split_dict)
+
+def new_cols(spl_dict):
+    for idx, d in spl_dict.items():
+        current.ix[idx, 'PatientID'] = d['patientID']
+        current.ix[idx, 'Visit'] = d['visit']
+        current.ix[idx, 'Dilution'] = d['dilution']
+
+new_cols(split_dict)
+print(current[['PatientID', 'Visit', 'Dilution']])
