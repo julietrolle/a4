@@ -1,14 +1,14 @@
 import pandas as pd
-import matplotlib
-import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib
+#import numpy as np
+#import matplotlib.pyplot as plt
 import xlrd
 
-matplotlib.style.use('ggplot')
-import pprint
+#matplotlib.style.use('ggplot')
+#import pprint
 
 df = pd.read_excel('06222016 Staph Array Data.xlsx', sheetname=None, header=1) #makes a dictionary of sheets to parse through all sheets in xl file
-# print (df)
+#print (df)
 for sheetname in df:
     sheet = df[sheetname] #creating sheet to parse thru
     for values in sheet.values:
@@ -51,4 +51,19 @@ for sheetname in df:
             dilution = parsed_list[-1]
             #print(patient, visit, dilution)
 
-        print (patient, visit, dilution)
+        #print (patient, visit, dilution)
+
+#print (list(df['Plate 1']['Betatoxin'].items()))
+#c = df['Plate 1']['Betatoxin'].items()
+
+print(df['Plate 1']['Sample ID'])
+#print(df['Plate 1']['Betatoxin'].items())
+#d = list(c)
+#x = []
+#for tuple in d:
+ #   x.append(tuple[0])
+#print (x)
+#y = []
+#for tuple in d:
+ #   y.append(tuple[1])
+#print(y)

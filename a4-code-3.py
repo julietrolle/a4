@@ -4,7 +4,7 @@ import pprint
 df = pd.read_excel('06222016 Staph Array Data.xlsx', sheetname=None, header=1)  # makes a dictionary of sheets to parse through all sheets in xl file
 # print (df)
 
-current = df['Plate 1'] # allows us to figure stuff out for one plate before we do it for all
+current = df['Plate '] # allows us to figure stuff out for one plate before we do it for all
 
     #my original code
 # current['SampleID'] = current['Sample ID']
@@ -24,9 +24,10 @@ def splitSampleID(sampleID):
     temp = sampleID.split()
     if len(temp) == 3:
         return {'patientID': temp[0], 'visit': temp[1], 'dilution': temp[2]}
+    elif len(temp)== 2:
+        return {'patientID': temp[0], 'visit': "Not_found", 'dilution': temp[1]}
     else:
         return {'patientID': temp[0], 'visit': "Not_found", 'dilution': temp[1]}
-
 # {rowid: {'patientID': asd, 'visit':v1, 'dilution':1231}, }
 split_dict = {}
 for row in current.iterrows():
