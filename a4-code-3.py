@@ -1,22 +1,11 @@
 import pandas as pd
 import pprint
+import numpy as np
 
 df = pd.read_excel('06222016 Staph Array Data.xlsx', sheetname=None, header=1)  # makes a dictionary of sheets to parse through all sheets in xl file
 # print (df)
 
-current = df['Plate '] # allows us to figure stuff out for one plate before we do it for all
-
-    #my original code
-# current['SampleID'] = current['Sample ID']
-# print(current)
-# print(current['Sample ID'])
-#print(current['SampleID'])
-# plots = ['surface protein ext','cytoplasmic ext', ...]
-# current['PatientID'] = current.apply(lambda x: x.SampleID.split()[0:-2], axis=1)
-# current['Replicate'] = current.apply(lambda x: x.SampleID.split()[-2], axis=1) #problems in plates 3-6, add if statement if 'V' in string? or create placeholder for values not found
-# current['Dilution'] = current.apply(lambda x: x.SampleID.split()[-1], axis=1)
-
-#print(current[['PatientID', 'Replicate', 'Dilution']])
+current = df['Plate 1'] # allows us to figure stuff out for one plate before we do it for all
 
     #after chatting with Mark:
 def splitSampleID(sampleID):
@@ -28,6 +17,7 @@ def splitSampleID(sampleID):
         return {'patientID': temp[0], 'visit': "Not_found", 'dilution': temp[1]}
     else:
         return {'patientID': temp[0], 'visit': "Not_found", 'dilution': temp[1]}
+
 # {rowid: {'patientID': asd, 'visit':v1, 'dilution':1231}, }
 split_dict = {}
 for row in current.iterrows():
@@ -44,21 +34,109 @@ def new_cols(spl_dict, dfr):     #to take the split data and put it into the cur
     return dfr
 
 new_cols(split_dict, current)
-print(current[['PatientID', 'Visit', 'Dilution']])
+#print(current[['PatientID', 'Visit', 'Dilution']])
 
 def find_unique_patientID(dfr):
     test = list(dfr['PatientID'].unique())
     return test
 
 unique_patientID_list = find_unique_patientID(current)
-print(unique_patientID_list)
+#print(unique_patientID_list)
 
 # print(current.groupby('PatientID').groups)
 
-def groupby_fn(dfr, patient):
-    return dfr.ix[dfr['PatientID'] == patient, :]
+# def groupby_fn(dfr, patient):
+#     return dfr.ix[dfr['PatientID'] == patient, :]
+#
+# for patient in unique_patientID_list:
+#     (groupby_fn(current, patient)) #print this to see what it does
 
-for patient in unique_patientID_list:
-    groupby_fn(current, patient) #print this to see what it does
-    #input plotting code
+#for tab-delimited dataframe
+hospital_dict = {}
+for row in current.iterrows():
+    hospital_dict[row[0]] = row[1][1]
 
+# pprint.pprint(hospital_dict)
+
+gender_dict = {}
+for row in current.iterrows():
+    gender_dict[row[0]] = row[1][3]
+
+# pprint.pprint(gender_dict)
+
+current1 = current.replace(np.nan, 'placeholder', regex=True) #to replace nan in dict with placeholder
+
+age_dict = {}
+for row in current1.iterrows():
+    age_dict[row[0]] = row[1][2]
+
+#pprint.pprint(age_dict)
+
+d = 1.0
+e = int(d)
+f = 'somestring'
+
+def implied_hosp_fn(hosp_dict, dfr):
+    hosp_float_list = []
+    for idx, hosp in hosp_dict.items():
+        if type(hosp) == type(d):
+            hosp = str(hosp)
+            hosp_float_list.append(idx)
+        if (idx) not in hosp_float_list:
+            dfr.ix[idx, 'Hospital '] = str(hosp_dict[idx])
+        if (idx - 1) not in hosp_float_list:
+            if idx >= 1:
+                dfr.ix[idx, 'Hospital '] = str(hosp_dict[(idx - 1)])
+        if (idx - 2) not in hosp_float_list:
+            if idx >= 2:
+                dfr.ix[idx, 'Hospital '] = str(hosp_dict[(idx - 2)])
+        if (idx - 3) not in hosp_float_list:
+            if idx >= 3:
+                dfr.ix[idx, 'Hospital '] = str(hosp_dict[(idx - 3)])
+    return dfr
+
+def implied_gend_fn(gend_dict, dfr):
+    gend_float_list = []
+    for idx, gend in gend_dict.items():
+        if type(gend) == type(d):
+            gend = str(gend)
+            gend_float_list.append(idx)
+        if (idx) not in gend_float_list:
+            dfr.ix[idx, 'Gender'] = str(gend_dict[idx])
+        if (idx - 1) not in gend_float_list:
+            if idx >= 1:
+                dfr.ix[idx, 'Gender'] = str(gend_dict[(idx - 1)])
+        if (idx - 2) not in gend_float_list:
+            if idx >= 2:
+                dfr.ix[idx, 'Gender'] = str(gend_dict[(idx - 2)])
+        if (idx - 3) not in gend_float_list:
+            if idx >= 3:
+                dfr.ix[idx, 'Gender'] = str(gend_dict[(idx - 3)])
+    return dfr
+
+def implied_ag_fn(ag_dict, dfr):
+    ag_float_list = []
+    for idx, ag in ag_dict.items():
+        if type(ag) != type(f):
+            ag_float_list.append(idx)
+        if (idx) in ag_float_list:
+            dfr.ix[idx, 'Age'] = ag_dict[idx]
+        if (idx - 1) in ag_float_list:
+            if idx >= 1:
+                dfr.ix[idx, 'Age'] = ag_dict[(idx - 1)]
+        if (idx - 2) in ag_float_list:
+            if idx >= 2:
+                dfr.ix[idx, 'Age'] = ag_dict[(idx - 2)]
+        if (idx - 3) in ag_float_list:
+            if idx >= 3:
+                dfr.ix[idx, 'Age'] = ag_dict[(idx - 3)]
+    #print(ag_float_list)
+    return dfr
+
+implied_hosp_fn(hospital_dict, current)
+implied_gend_fn(gender_dict, current)
+implied_ag_fn(age_dict, current)
+
+print(current)
+
+current.to_csv('current_output.csv', sep='\t') #creates csv file with dataframe
