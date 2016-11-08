@@ -29,7 +29,7 @@ def splitSampleID(sampleID):
     else:
         return {'patientID':' '.join(temp[0:-2]), 'visit' : temp[-2], 'dilution' : temp[-1]}
 
-def new_cols(spl_dict, dfr):
+def new_cols(spl_dict, dfr): #inserts parsed patientIDs into new columns in dataframe
     for idx, d in spl_dict.items():
         dfr.ix[idx, 'PatientID'] = d['patientID']
         if 'visit' in d:
@@ -45,7 +45,7 @@ def find_unique_patientID(dfr):
     test = list(dfr['PatientID'].unique())
     return test
 
-def implied_hosp_fn(hosp_dict, dfr):
+def implied_hosp_fn(hosp_dict, dfr): #to insert implied hospital values into all rows of the col
     hosp_float_list = []
     for idx, hosp in hosp_dict.items():
         if type(hosp) == type(d):
